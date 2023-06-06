@@ -128,3 +128,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# iOS
+*.xcuserstate
+project.xcworkspace
+xcuserdata
+
+# example
+example/
