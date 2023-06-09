@@ -15,8 +15,8 @@
 
 Below sdk or tools are required before start to use react-native-moxo-module.
 
-* Flutter v3.7.10+
-* Dart v2.19.6+
+* Node.js v14+
+* Watchman
 
 ### Android
 
@@ -33,7 +33,7 @@ For more react-native set up details, please ref to [react native official site]
 ## Installation
 
 ```sh
-npm install react-native-moxo-module
+npm install @moxtradeveloper/react-native-moxo-module
 ```
 
 ### iOS Specific Steps
@@ -88,7 +88,7 @@ import * as moxo from 'react-native-moxo-module';
 // Setup domain
 moxo.setup('myenv.moxo.com')
 //Login and show moxo engagement platform window
-moxo.link(token).then((success)=>{
+moxo.link(token).then((result)=>{
 if (result)
     console.log(`Link success`)
 }).catch((err=>{
@@ -228,4 +228,5 @@ To do more, you can invoke function openChat(chat_id) to open target chat direct
 ```
 
 ## API Doc
+
 [API doc](https://htmlpreview.github.io/?https://github.com/Moxtra/react-native-moxo-module/blob/main/docs/index.html)
