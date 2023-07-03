@@ -69,6 +69,13 @@ export function hideMEPWindow() {
 }
 
 /**
+ * Change language, language code should follow ISO 639-1 standard.
+*/
+export function changeLanguage(language: string) {
+  return MoxoModule.changeLanguage(language);
+}
+
+/**
  * Open chat with chat Id and scroll to the specified feed
  * @param {string} chatId             - Id of chat.
  * @param {number} feedSequence       - Sequence of feed.
