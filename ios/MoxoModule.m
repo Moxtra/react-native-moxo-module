@@ -8,6 +8,7 @@ RCT_EXTERN_METHOD(link:(NSString *)token
 RCT_EXTERN_METHOD(unlink:(BOOL)keepNotification)
 RCT_EXTERN_METHOD(showMEPWindow)
 RCT_EXTERN_METHOD(hideMEPWindow)
+RCT_EXTERN_METHOD(changeLanguage:(NSString *)language)
 RCT_EXTERN_METHOD(openChat:(NSString *)chatId
                   feedSequence:(NSNumber *__nonnull)feedSequence
                  withResolver:(RCTPromiseResolveBlock)resolve
