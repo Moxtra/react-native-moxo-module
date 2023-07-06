@@ -141,3 +141,11 @@ export function parseNotification(payload:object): Promise<object>  {
   return MoxoModule.parseNotification(payload);
 }
 
+/**
+ * Show meet ringer with session Id. For Android only.
+ * @param {string} sessionId   - session Id 
+*/
+export function showMeetRinger(sessionId:string): Promise<object>  {
+  return MoxoModule.showMeetRinger(sessionId);
+}
+
