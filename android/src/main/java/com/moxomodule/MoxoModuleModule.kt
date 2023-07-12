@@ -84,7 +84,31 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
         }
       })
     }
+  }
 
+  @ReactMethod
+  fun unlink(keepNotification: Boolean) {
+    Log.d(TAG, "unlink called with keep notification $keepNotification")
+    val callback: ApiCallback<Void?> = object : ApiCallback<Void?> {
+      override fun onCompleted(rult: Void?) {
+        Log.d(TAG, "unlink successful...")
+      }
+
+      override fun onError(errorCode: Int, errorMsg: String) {
+        Log.w(TAG, "unlink failed with error code $errorCode and error message $errorMsg ...")
+      }
+    }
+    if (keepNotification) {
+      MEPClient.localUnlink(callback)
+    } else {
+      MEPClient.unlink(callback)
+    }
+  }
+
+  @ReactMethod
+  fun getUnreadMessageCount(options: ReadableMap?, promise: Promise?) {
+    var unreadCount = MEPClient.getUnreadMessageCount()
+    promise?.resolve(unreadCount)
   }
 
   @ReactMethod
