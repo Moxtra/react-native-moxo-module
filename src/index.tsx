@@ -69,6 +69,13 @@ export function hideMEPWindow() {
 }
 
 /**
+ * Change language, language code should follow ISO 639-1 standard.
+*/
+export function changeLanguage(language: string) {
+  return MoxoModule.changeLanguage(language);
+}
+
+/**
  * Open chat with chat Id and scroll to the specified feed
  * @param {string} chatId             - Id of chat.
  * @param {number} feedSequence       - Sequence of feed.
@@ -132,5 +139,13 @@ export function registerNotification(deviceToken:string) {
 */
 export function parseNotification(payload:object): Promise<object>  {
   return MoxoModule.parseNotification(payload);
+}
+
+/**
+ * Show meet ringer with session Id. For Android only.
+ * @param {string} sessionId   - session Id 
+*/
+export function showMeetRinger(sessionId:string): Promise<object>  {
+  return MoxoModule.showMeetRinger(sessionId);
 }
 
