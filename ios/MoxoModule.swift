@@ -51,6 +51,13 @@ class MoxoModule: RCTEventEmitter, MEPClientDelegate {
         }
     }
     
+    @objc(changeLanguage:)
+    func changeLanguage(language:String) {
+        DispatchQueue.main.async {
+            MEPClient.sharedInstance().changeLanguage(language)
+        }
+    }
+    
     @objc(openChat:feedSequence:withResolver:withRejecter:)
     func openChat(chatId:String,feedSequence:NSNumber,resolve:@escaping RCTPromiseResolveBlock, reject:@escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {

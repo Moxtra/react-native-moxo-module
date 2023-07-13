@@ -84,7 +84,31 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
         }
       })
     }
+  }
 
+  @ReactMethod
+  fun unlink(keepNotification: Boolean) {
+    Log.d(TAG, "unlink called with keep notification $keepNotification")
+    val callback: ApiCallback<Void?> = object : ApiCallback<Void?> {
+      override fun onCompleted(rult: Void?) {
+        Log.d(TAG, "unlink successful...")
+      }
+
+      override fun onError(errorCode: Int, errorMsg: String) {
+        Log.w(TAG, "unlink failed with error code $errorCode and error message $errorMsg ...")
+      }
+    }
+    if (keepNotification) {
+      MEPClient.localUnlink(callback)
+    } else {
+      MEPClient.unlink(callback)
+    }
+  }
+
+  @ReactMethod
+  fun getUnreadMessageCount(options: ReadableMap?, promise: Promise?) {
+    var unreadCount = MEPClient.getUnreadMessageCount()
+    promise?.resolve(unreadCount)
   }
 
   @ReactMethod
@@ -234,6 +258,7 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
                     var meetId = rlt.getValue(key)
                     jsonObject.put("session_id", meetId)
                   }
+
                   else -> continue
                 }
               }
@@ -253,6 +278,38 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
     } catch (e: JSONException) {
       e.printStackTrace()
       promise?.reject("-1", "Invalid parameter: Not fcm payload")
+    }
+  }
+
+  @ReactMethod
+  fun showMeetRinger(sessionId: String, promise: Promise?) {
+    Log.d(TAG, "show meet ringer called with session id $sessionId")
+    if (!MEPClient.isLinked()) {
+      promise?.reject("-1", "Not linked")
+      return
+    }
+    if (sessionId.isEmpty()) {
+      promise?.reject("-1", "session id is empty!")
+      return
+    }
+    MEPClient.showMeetRinger(sessionId, object : ApiCallback<Void> {
+      override fun onCompleted(rlt: Void?) {
+        Log.d(TAG, "show meet ringer success ...")
+        promise?.resolve("Show meet ringer success")
+      }
+
+      override fun onError(errorCode: Int, errorMsg: String?) {
+        Log.w(TAG, "show meet ringer failed with $errorCode and $errorMsg ...")
+        promise?.reject("-1", "Show meet ringer failed with $errorCode and $errorMsg")
+      }
+    })
+  }
+
+  @ReactMethod
+  fun changeLanguage(lang: String) {
+    Log.d(TAG, "changeLanguage called with $lang ...")
+    if (lang.isNotEmpty()) {
+      MEPClient.changeLanguage(lang)
     }
   }
 
