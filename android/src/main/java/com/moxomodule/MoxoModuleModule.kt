@@ -220,7 +220,10 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
       "registerNotification called and token is " + (if (deviceToken == null) "null" else "not null")
     )
     if (deviceToken != null) {
-      MEPClient.registerNotification(deviceToken, object : ApiCallback<Void> {
+            MEPClient.registerNotification(
+                deviceToken,
+        null, null, null,
+        object : ApiCallback<Void> {
         override fun onCompleted(rlt: Void?) {
           Log.d(TAG, "registerNotification called and completed...")
         }
