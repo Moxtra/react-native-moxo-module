@@ -25,7 +25,7 @@ Below sdk or tools are required before start to use react-native-moxo-module.
 
 ### iOS
 
-* Xcode v14.1+
+* Xcode v14.3+
 * Cocoapod v1.11.0+
 
 For more react-native set up details, please ref to [react native official site](https://reactnative.dev/docs/environment-setup)

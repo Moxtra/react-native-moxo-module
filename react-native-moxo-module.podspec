@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.public_header_files = 'ios/*.h'
   s.swift_version = '5.0'
   s.dependency "React-Core"
-  s.dependency 'MEPSDK', '~> 8.16.6'
+  s.dependency 'MEPSDKDylib', '~> 9.6.2'
 
   # Don't install the dependencies when we run `pod install` in the old architecture.
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then

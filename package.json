@@ -1,6 +1,6 @@
 {
   "name": "@moxtradeveloper/react-native-moxo-module",
-  "version": "8.16.6",
+  "version": "9.6.2",
   "description": "Plugin for adding Moxtra services to react-native Apps.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
