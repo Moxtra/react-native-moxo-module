@@ -148,7 +148,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation "com.moxtra:mep-sdk:9.6.2"
+  implementation "com.moxtra:mep-sdk:9.8.6"
 // From node_modules
 }
 
