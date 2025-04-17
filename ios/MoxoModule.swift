@@ -102,6 +102,28 @@ class MoxoModule: RCTEventEmitter, MEPClientDelegate {
         let ret = MEPClient.sharedInstance().getUnreadMessageCount()
         resolve(ret)
     }
+  
+    @objc(startMeet:options:withResolver:withRejecter:)
+    func startMeet(topic: String, options:Dictionary<String, Any>,resolve:@escaping RCTPromiseResolveBlock, reject:@escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            let meetOption = MEPStartMeetOptions()
+            meetOption.topic = topic
+            meetOption.chatID = options["chat_id"] as? String ?? nil
+            meetOption.uniqueIDs = options["unique_ids"] as? Array ?? nil
+            meetOption.autoJoinAudio = options["auto_join_audio"] as? Bool ?? true
+            meetOption.autoStartVideo = options["auto_start_video"] as? Bool ?? false
+            meetOption.autoRecording = options["auto_recording"] as? Bool ?? false
+            meetOption.instantCall = options["instant_call"] as? Bool ?? false
+            MEPClient.sharedInstance().startMeet(withOption: meetOption) { error, meetId in
+                if let err = error as? NSError {
+                    reject("\(err.code)", err.localizedDescription, error)
+                } else {
+                    let ret = ["session_id": meetId]
+                    resolve(ret)
+                }
+            }
+        }
+    }
     
     //MARK: Notification
     @objc(registerNotification:withResolver:withRejecter:)

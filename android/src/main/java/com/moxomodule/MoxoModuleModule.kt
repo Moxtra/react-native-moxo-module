@@ -7,8 +7,10 @@ import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.moxtra.mepsdk.MEPClient
 import com.moxtra.mepsdk.MEPClientDelegate
+import com.moxtra.mepsdk.data.MEPStartMeetOptions
 import com.moxtra.sdk.LinkConfig
 import com.moxtra.sdk.common.ApiCallback
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -316,6 +318,55 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
     }
   }
 
+    @ReactMethod
+  fun startMeet(topic: String, options: ReadableMap?, promise: Promise?) {
+    Log.d(TAG, "startMeet called with topic: $topic, options:" + options?.toString())
+    if (topic.isNullOrEmpty()) {
+      promise?.reject("-1", "Topic is empty!")
+      return
+    }
+
+    var callback: ApiCallback<String> = object : ApiCallback<String> {
+      override fun onCompleted(sessionId: String) {
+        Log.d(TAG, "startMeet success ...")
+        val jsonObject = JSONObject()
+        with(jsonObject) {
+          put("session_id", sessionId)
+        }
+        promise?.resolve(json2WritableNativeMap(jsonObject))
+      }
+
+      override fun onError(errorCode: Int, errorMsg: String?) {
+        Log.w(TAG, "startMeet failed with $errorCode and $errorMsg ...")
+        promise?.reject(errorCode.toString(), "startMeet failed with $errorCode and $errorMsg")
+      }
+    }
+
+    //map to MEPStartMeetOptions
+    var mepStartMeetOptions = MEPStartMeetOptions()
+    mepStartMeetOptions.topic = topic
+
+    var mapValues = options?.entryIterator;
+    while (mapValues?.hasNext() == true) {
+      var mapEntry = mapValues.next()
+      when (mapEntry.key) {
+        "chat_id" -> mepStartMeetOptions.chatID = mapEntry.value.toString()
+        "auto_join_audio" -> mepStartMeetOptions.setAutoJoinAudio(mapEntry.value as Boolean)
+        "auto_start_video" -> mepStartMeetOptions.setAutoStartVideo(mapEntry.value as Boolean)
+        "auto_recording" -> mepStartMeetOptions.isAutoRecordingEnabled = mapEntry.value as Boolean
+        "instant_call" -> mepStartMeetOptions.setInstantCall(mapEntry.value as Boolean)
+        "unique_ids" -> {
+          val ids = mapEntry.value
+          if (ids is ReadableNativeArray) {
+            ids.toArrayList().also { mepStartMeetOptions.uniqueIDs = it as ArrayList<String> }
+          }
+        }
+      }
+    }
+
+    MEPClient.startMeet(mepStartMeetOptions, callback)
+  }
+
   private fun json2Intent(jsonObject: JSONObject?): Intent {
     var intent = Intent()
     var keys = jsonObject?.keys();
@@ -339,6 +390,61 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
       }
     }
     return intent
+  }
+
+ private fun json2WritableNativeMap(jsonObject: JSONObject?): WritableNativeMap {
+    val writableMap = WritableNativeMap()
+    jsonObject?.let {
+      for (key in jsonObject.keys()) {
+        when (val value = jsonObject.get(key)) {
+          is JSONObject -> {
+            writableMap.putMap(key, json2WritableNativeMap(value))
+          }
+
+          is JSONArray -> {
+            writableMap.putArray(key, json2WritableNativeArray(value))
+          }
+
+          is String -> {
+            writableMap.putString(key, value)
+          }
+
+          is Boolean -> {
+            writableMap.putBoolean(key, value)
+          }
+
+          is Double -> {
+            writableMap.putDouble(key, value)
+          }
+
+          is Int -> {
+            writableMap.putInt(key, value)
+          }
+
+          is Long -> {
+            writableMap.putDouble(key, value.toDouble());
+          }
+
+          else -> {
+            writableMap.putString(key, value.toString())
+          }
+        }
+      }
+    }
+    return writableMap
+  }
+
+  private fun json2WritableNativeArray(jsonArray: JSONArray?): WritableNativeArray {
+    val writableArray = WritableNativeArray()
+    jsonArray?.let {
+      for (i in 0 until jsonArray.length()) {
+        val jsonObject = jsonArray.get(i)
+        if (jsonObject is JSONObject) {
+          writableArray.pushMap(json2WritableNativeMap(jsonObject))
+        }
+      }
+    }
+    return writableArray
   }
 
   companion object {

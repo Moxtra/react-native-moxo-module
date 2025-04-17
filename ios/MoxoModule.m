@@ -16,6 +16,10 @@ RCT_EXTERN_METHOD(openChat:(NSString *)chatId
 RCT_EXTERN_METHOD(openRelation:(NSDictionary *)user
                  withResolver:(RCTPromiseResolveBlock)resolve
                  withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(startMeet:(NSString *)topic
+                 options:(NSDictionary *)options
+                 withResolver:(RCTPromiseResolveBlock)resolve
+                 withRejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(getUnreadMessageCount:(NSDictionary *)options
                  withResolver:(RCTPromiseResolveBlock)resolve
                  withRejecter:(RCTPromiseRejectBlock)reject)

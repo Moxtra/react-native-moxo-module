@@ -149,3 +149,26 @@ export function showMeetRinger(sessionId:string): Promise<object>  {
   return MoxoModule.showMeetRinger(sessionId);
 }
 
+/**
+ * Start meet with options.
+ * 
+ * @param topic   Topic of meeting
+ * @param options Start meet options.
+ *  {
+ *    "unique_ids": ["unique_id_a", "unique_id_b", ...],  //user unique id array
+ *    "chat_id":"chat_id",             //id of chat where this meeting will start
+ *    "auto_join_audio": true/false,   //default is true
+ *    "auto_start_video": true/false,  //default is false
+ *    "auto_recording": true/false,    //default is false
+ *    "instant_call": true/false       //default is false, set to true to enable call UI with dialer tone when start a meeting with only one user.
+ *                                     //this option only works when unique_ids got only one user, and autoJoinAudio set to true.
+ *  }
+ * @returns session id if start meet successfully:
+ *  {
+ *    "session_id": "255576178"
+ *  }
+ */
+export function startMeet(topic: string, options?: object): Promise<object> {
+  return MoxoModule.startMeet(topic, options);
+}
+
