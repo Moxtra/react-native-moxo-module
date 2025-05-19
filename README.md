@@ -56,6 +56,25 @@ install! 'cocoapods', :deterministic_uuids => false
 # Rest of the file.....
 ```
 
+Exception: 
+![pod_error](./docs/pod_error.png)
+if you getting this error post moxo plugin installation, please also add master cocoapod repo as source into Podfile under your iOS project.
+Usually is https://github.com/CocoaPods/Specs.git
+
+```ruby
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+#Add moxo source here
+source 'https://maven.moxtra.com/repo/moxtra-specs.git'
+source 'https://github.com/CocoaPods/Specs.git'
+
+#Change platform version if is not iOS 13
+platform :ios, '13.0'
+install! 'cocoapods', :deterministic_uuids => false
+
+# Rest of the file.....
+```
+
 ## Initialization
 
 ### Login
