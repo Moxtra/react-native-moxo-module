@@ -3,6 +3,7 @@ class MoxoModule: RCTEventEmitter, MEPClientDelegate {
     let default_error_code = 999
     let default_error_message = "invalid parameters"
     let unread_message_event = "onUnreadMessageCountUpdated"
+    let tap_close_event = "tapWindowCloseEvent"
     private var onUnreadMessageCountUpdated:RCTResponseSenderBlock? = nil;
     
     override class func moduleName() -> String! {
@@ -155,9 +156,13 @@ class MoxoModule: RCTEventEmitter, MEPClientDelegate {
         sendEvent(withName: unread_message_event, body: unreadCount)
     }
     
+    func client(_ client: MEPClient, didTapClose sender: Any?) {
+        sendEvent(withName: tap_close_event, body: nil)
+    }
+    
     //MARK: RCTBridgeModule
     override func supportedEvents() -> [String]! {
-        return [unread_message_event]
+        return [unread_message_event, tap_close_event]
     }
 }
 

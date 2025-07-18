@@ -5,6 +5,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 const UNREAD_MSG_EVENT = "onUnreadMessageCountUpdated";
+const TAP_WINDOW_CLOSE_EVENT = "tapWindowCloseEvent";
 
 const MoxoModule = NativeModules.MoxoModule
   ? NativeModules.MoxoModule
@@ -170,5 +171,13 @@ export function showMeetRinger(sessionId:string): Promise<object>  {
  */
 export function startMeet(topic: string, options?: object): Promise<object> {
   return MoxoModule.startMeet(topic, options);
+}
+
+/**
+ * Set the callback when user tap close button on MEP window
+ * You should call hideMEPWindow() to hide MEP window in this callback if you want to hide MEP window
+*/
+export function onTapWindowClose(callback: () => void) {
+  MoxoEventEmitter.addListener(TAP_WINDOW_CLOSE_EVENT, callback);
 }
 

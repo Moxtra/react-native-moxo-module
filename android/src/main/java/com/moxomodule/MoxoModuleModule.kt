@@ -9,6 +9,7 @@ import com.moxtra.mepsdk.MEPClient
 import com.moxtra.mepsdk.MEPClientDelegate
 import com.moxtra.mepsdk.data.MEPStartMeetOptions
 import com.moxtra.sdk.LinkConfig
+import com.moxtra.sdk.common.ActionListener
 import com.moxtra.sdk.common.ApiCallback
 import org.json.JSONArray
 import org.json.JSONException
@@ -22,7 +23,8 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
   private var mReactContext = reactContext
 
   private val UNREAD_MSG_EVENT = "onUnreadMessageCountUpdated"
-
+  private val TAP_WINDOW_CLOSE_EVENT = "tapWindowCloseEvent"
+  
   override fun getName(): String {
     return NAME
   }
@@ -32,17 +34,15 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
     Log.d(TAG, "setup called with domain: $domain, options: $options")
     var linkConfig: LinkConfig? = null
     try {
-      if (domain != null) {
-        if (options != null && options is String) {
+      if (!domain.isNullOrEmpty() && !options.isNullOrEmpty()) {
           linkConfig = LinkConfig()
           val jsonObject = JSONObject(options)
           val certOrgName: String? = jsonObject.getString("certOrgName")
           val certPublicKey: String? = jsonObject.getString("certPublicKey")
           val ignoreBadCert: Boolean = jsonObject.getBoolean("ignoreBadCert")
-          linkConfig.setCertOrganization(certOrgName)
-          linkConfig.setCertPublicKey(certPublicKey)
-          linkConfig.setIgnoreBadCert(ignoreBadCert)
-        }
+        linkConfig.certOrganization = certOrgName
+        linkConfig.certPublicKey = certPublicKey
+        linkConfig.isIgnoreBadCert = ignoreBadCert
       }
     } catch (e: JSONException) {
 
@@ -51,16 +51,13 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
     mReactContext.runOnUiQueueThread {
       MEPClient.initialize(mReactContext?.applicationContext as Application)
       MEPClient.setupDomain(domain, linkConfig)
-
-      //setup callbacks
-      onUnreadMessageCountUpdated()
     }
   }
 
   @ReactMethod
   fun link(token: String?, promise: Promise?) {
     Log.d(TAG, "link called with token: $token")
-    if (token == null || token.isEmpty()) {
+    if (token.isNullOrEmpty()) {
       promise?.reject("-1", "token is empty or null")
       return
     }
@@ -138,7 +135,7 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
       promise?.reject("-1", "Not linked")
       return
     }
-    if (chatId?.isEmpty() == false) {
+    if (!chatId.isNullOrEmpty()) {
       MEPClient.openChat(chatId, feedSequence?.toLong() ?: 0, object : ApiCallback<Void?> {
         override fun onCompleted(rult: Void?) {
           Log.d(TAG, "openChat successful...")
@@ -179,9 +176,9 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
         )
       }
     }
-    if (uniqueId?.isEmpty() == false) {
+    if (!uniqueId.isNullOrEmpty()) {
       MEPClient.openRelationChat(uniqueId, callback)
-    } else if (email?.isEmpty() == false) {
+    } else if (!email.isNullOrEmpty()) {
       MEPClient.openRelationChatWithEmail(email, callback)
     } else {
       promise?.reject("-1", "Invalid parameter")
@@ -198,8 +195,19 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
 
     MEPClient.getClientDelegate().setOnUnreadMessageListener(listener)
   }
+  
+  private fun onTapWindowClose() {
+    Log.d(TAG, "onTapWindowClose called...")
+    val listener: ActionListener<Void> = ActionListener { _, _ ->
+      run {
+        Log.d(TAG, "onTapWindowClose button clicked...")
+        sendEvent(mReactContext, TAP_WINDOW_CLOSE_EVENT, null)
+      }
+    }
+    MEPClient.getClientDelegate().setOnCloseButtonListener(listener)
+  }
 
-  private fun sendEvent(reactContext: ReactContext, eventName: String, params: Int?) {
+  private fun sendEvent(reactContext: ReactContext, eventName: String, params: Any?) {
     reactContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       .emit(eventName, params)
@@ -208,6 +216,10 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun addListener(eventName: String) {
     Log.d(TAG, "addListener called...")
+    when (eventName) {
+        TAP_WINDOW_CLOSE_EVENT ->
+           onTapWindowClose()
+    }
   }
 
   @ReactMethod
@@ -221,7 +233,7 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
       TAG,
       "registerNotification called and token is " + (if (deviceToken == null) "null" else "not null")
     )
-    if (deviceToken != null) {
+    if (!deviceToken.isNullOrEmpty()) {
             MEPClient.registerNotification(
                 deviceToken,
         null, null, null,
@@ -267,7 +279,7 @@ class MoxoModuleModule(reactContext: ReactApplicationContext) :
                   else -> continue
                 }
               }
-              promise?.resolve(jsonObject.toString())
+              promise?.resolve(json2WritableNativeMap(jsonObject))
             }
 
             override fun onError(errorCode: Int, errorMsg: String?) {
