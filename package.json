@@ -13,9 +13,11 @@
     "android",
     "ios",
     "cpp",
+    "scripts",
     "*.podspec",
     "!lib/typescript/example",
     "!ios/build",
+    "!ios/Frameworks",
     "!android/build",
     "!android/gradle",
     "!android/gradlew",
@@ -27,13 +29,14 @@
     "!**/.*"
   ],
   "scripts": {
+    "postinstall": "node scripts/download-mepsdk.js",
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "example": "yarn --cwd example",
     "bootstrap": "yarn example && yarn install && yarn example pods",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
-    "doc":"typedoc ./src/index.tsx --skipErrorChecking"
+    "doc": "typedoc ./src/index.tsx --skipErrorChecking"
   },
   "keywords": [
     "moxtra",
@@ -158,5 +161,11 @@
         }
       ]
     ]
+  },
+  "moxoSdk": {
+    "ios": {
+      "version": "10.1.4",
+      "downloadUrl": "https://cdn.moxtra.com/mepsdk/dynamic/Dynamic_MEPSDK_iOS_v${version}.zip"
+    }
   }
 }

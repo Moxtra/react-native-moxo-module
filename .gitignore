@@ -137,3 +137,6 @@ xcuserdata
 # example
 example/
 lefthook.yml
+
+# Downloaded iOS SDK frameworks
+ios/Frameworks/
