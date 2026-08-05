@@ -8,25 +8,25 @@
 
 ### Supported Platforms
 
-* iOS 13.0+
-* Android 4.4+
+* iOS 15.0+
+* Android 7+
 
 ## Preparation
 
 Below sdk or tools are required before start to use react-native-moxo-module.
 
-* Node.js v14+
+* Node.js v22 LTS and Later
 * Watchman
 
 ### Android
 
 * Android Studio
-* Android SDK v19+
+* Android SDK v24+
 
 ### iOS
 
-* Xcode v14.3+
-* Cocoapod v1.11.0+
+* Xcode v26+
+* Cocoapod v1.16.0+
 
 For more react-native set up details, please ref to [react native official site](https://reactnative.dev/docs/environment-setup)
 
