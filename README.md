@@ -165,10 +165,8 @@ To do more, you can invoke function openChat(chat_id) to open target chat direct
         }
     },
     "id": "359",
-    "moxtra": "",
     "category": "message",
-    "board_id": "CBPErkesrtOeFfURA6gusJAD",
-    "moxtra": ""
+    "board_id": "CBPErkesrtOeFfURA6gusJAD"
 }
 ```
 
@@ -185,7 +183,6 @@ To do more, you can invoke function openChat(chat_id) to open target chat direct
        "feed_sequence": "3234",
        "action_loc_key": "BCA",
        "board_feed_unread_count": "3",
-       "moxtra": "",
        "user_id": "CUxceIGfpXcHBna163lfFMD0",
        "arg1": "rm1 Zhang",
        "arg2": "1",

@@ -1,6 +1,6 @@
 {
   "name": "@moxtradeveloper/react-native-moxo-module",
-  "version": "10.1.4",
+  "version": "10.11.1",
   "description": "Plugin for adding Moxo services to React Native Apps.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -163,7 +163,7 @@
   },
   "moxoSdk": {
     "ios": {
-      "version": "10.1.4",
+      "version": "10.11.1",
       "downloadUrl": "https://mxrepo.moxo.com/repository/customer-raw-releases/mepsdk/dynamic/Dynamic_MEPSDK_iOS_v${version}.zip"
     }
   }
