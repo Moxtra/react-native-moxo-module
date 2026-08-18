@@ -6,7 +6,7 @@ Moxo is an AI workflow automation platform for business operations.
 
 ## Introduce
 
-**react-native-moxo-module** is a [moxo sdk](https://www.moxo.com/platform/sdks) react-native wrapper. Provide Moxo OneStop capabilities to your mobile app built on [React Native](https://reactnative.dev/)
+**react-native-moxo-module** is a [moxo sdk](https://www.moxo.com/platform/sdks) react-native wrapper. Provide Moxo capabilities to your mobile app built on [React Native](https://reactnative.dev/)
 
 ### Supported Platforms
 
