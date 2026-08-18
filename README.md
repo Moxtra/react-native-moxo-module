@@ -23,7 +23,7 @@ Below sdk or tools are required before start to use react-native-moxo-module.
 ### Android
 
 * Android Studio
-* Android SDK v24+
+* Android SDK API 24+ (Android 7.0)
 
 ### iOS
 
