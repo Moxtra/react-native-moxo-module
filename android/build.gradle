@@ -6,7 +6,7 @@ buildscript {
     google()
     mavenCentral()
     maven() {
-      url "https://maven.moxtra.com/nexus/content/groups/mep_public/"
+      url "https://mxrepo.moxo.com/repository/customer-maven-releases/"
     }
   }
 
@@ -23,7 +23,7 @@ rootProject.allprojects {
     mavenCentral()
     jcenter()
     maven() {
-      url "https://maven.moxtra.com/nexus/content/groups/mep_public/"
+      url "https://mxrepo.moxo.com/repository/customer-maven-releases/"
     }
   }
 }

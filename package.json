@@ -1,7 +1,7 @@
 {
   "name": "@moxtradeveloper/react-native-moxo-module",
   "version": "10.1.4",
-  "description": "Plugin for adding Moxtra services to react-native Apps.",
+  "description": "Plugin for adding Moxo services to React Native Apps.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -39,7 +39,6 @@
     "doc": "typedoc ./src/index.tsx --skipErrorChecking"
   },
   "keywords": [
-    "moxtra",
     "moxo",
     "mep",
     "chat",
@@ -49,12 +48,12 @@
     "ios",
     "android"
   ],
-  "author": "john.hu <john.hu@moxo.com>",
+  "author": "Moxo Inc.",
   "license": "ISC",
   "bugs": {
-    "url": "https://www.moxtra.com"
+    "url": "https://www.moxo.com"
   },
-  "homepage": "https://www.moxtra.com",
+  "homepage": "https://www.moxo.com",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -165,7 +164,7 @@
   "moxoSdk": {
     "ios": {
       "version": "10.1.4",
-      "downloadUrl": "https://cdn.moxtra.com/mepsdk/dynamic/Dynamic_MEPSDK_iOS_v${version}.zip"
+      "downloadUrl": "https://mxrepo.moxo.com/repository/customer-raw-releases/mepsdk/dynamic/Dynamic_MEPSDK_iOS_v${version}.zip"
     }
   }
 }

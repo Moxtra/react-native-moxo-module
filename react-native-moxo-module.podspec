@@ -11,8 +11,8 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => "13.0" }
-  s.source       = { :git => "https://github.com/johnhu-moxo/react-native-moxo-module.git", :tag => "#{s.version}" }
+  s.platforms    = { :ios => "15.0" }
+  s.source       = { :git => "https://github.com/Moxtra/react-native-moxo-module.git", :tag => "#{s.version}" }
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   s.public_header_files = 'ios/*.h'
   s.swift_version = '5.0'
