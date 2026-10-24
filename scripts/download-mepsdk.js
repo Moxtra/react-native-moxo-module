@@ -24,8 +24,9 @@ const MEPSDK_DOWNLOAD_URL = (sdkConfig.downloadUrl || '').replace(
 );
 
 const FRAMEWORK_DIR = path.join(__dirname, '..', 'ios', 'Frameworks');
-const FRAMEWORK_PATH = path.join(FRAMEWORK_DIR, 'MEPSDKDylib.xcframework');
-const ZIP_PATH = path.join(FRAMEWORK_DIR, 'MEPSDKDylib.xcframework.zip');
+const FRAMEWORK_PATH = path.join(FRAMEWORK_DIR, 'MEPSDK.xcframework');
+const VERSION_PATH = path.join(FRAMEWORK_DIR, '.version');
+const ZIP_PATH = path.join(FRAMEWORK_DIR, 'MEPSDK.xcframework.zip');
 
 function downloadFile(url, dest) {
   return new Promise((resolve, reject) => {
@@ -36,7 +37,7 @@ function downloadFile(url, dest) {
 
     const request = protocol.get(url, (response) => {
       // Handle redirects
-      if (response.statusCode === 301 || response.statusCode === 302) {
+      if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
         file.close();
         fs.unlinkSync(dest);
         return downloadFile(response.headers.location, dest)
@@ -80,13 +81,18 @@ async function main() {
     process.exit(1);
   }
 
-  // Skip if framework already exists
-  if (fs.existsSync(FRAMEWORK_PATH)) {
-    console.log('MEPSDKDylib.xcframework already exists, skipping download.');
+  // Skip if the configured framework version already exists
+  const installedVersion = fs.existsSync(VERSION_PATH)
+    ? fs.readFileSync(VERSION_PATH, 'utf8').trim()
+    : null;
+  if (fs.existsSync(FRAMEWORK_PATH) && installedVersion === MEPSDK_VERSION) {
+    console.log(
+      `MEPSDK.xcframework ${MEPSDK_VERSION} already exists, skipping download.`
+    );
     return;
   }
 
-  console.log(`\n📦 Downloading MEPSDKDylib ${MEPSDK_VERSION}...\n`);
+  console.log(`\n📦 Downloading MEPSDK ${MEPSDK_VERSION}...\n`);
 
   // Create Frameworks directory
   if (!fs.existsSync(FRAMEWORK_DIR)) {
@@ -98,6 +104,9 @@ async function main() {
     await downloadFile(MEPSDK_DOWNLOAD_URL, ZIP_PATH);
     console.log('Download complete. Extracting...');
 
+    // Replace any previously installed version
+    fs.rmSync(FRAMEWORK_PATH, { recursive: true, force: true });
+
     // Extract the zip file
     execSync(`unzip -o "${ZIP_PATH}" -d "${FRAMEWORK_DIR}"`, {
       stdio: 'inherit',
@@ -105,10 +114,11 @@ async function main() {
 
     // Clean up zip file
     fs.unlinkSync(ZIP_PATH);
+    fs.writeFileSync(VERSION_PATH, MEPSDK_VERSION);
 
-    console.log('\n✅ MEPSDKDylib.xcframework installed successfully!\n');
+    console.log('\n✅ MEPSDK.xcframework installed successfully!\n');
   } catch (error) {
-    console.error('\n❌ Failed to download MEPSDKDylib:', error.message);
+    console.error('\n❌ Failed to download MEPSDK:', error.message);
     console.error(
       '\nPlease ensure the CDN URL is correct or manually download the framework.'
     );

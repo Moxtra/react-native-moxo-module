@@ -1,48 +1,50 @@
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import type { EventSubscription } from 'react-native';
+import NativeMoxoModule from './NativeMoxoModule';
+import type { Spec } from './NativeMoxoModule';
+
 const LINKING_ERROR =
   `The package 'react-native-moxo-module' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
-const UNREAD_MSG_EVENT = "onUnreadMessageCountUpdated";
-const TAP_WINDOW_CLOSE_EVENT = "tapWindowCloseEvent";
 
-const MoxoModule = NativeModules.MoxoModule
-  ? NativeModules.MoxoModule
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    )
-const MoxoEventEmitter = new NativeEventEmitter(MoxoModule);
+const MoxoModule: Spec =
+  NativeMoxoModule ??
+  new Proxy({} as Spec, {
+    get() {
+      throw new Error(LINKING_ERROR);
+    },
+  });
+
 /**
  * Setup domain
  * Notice: This API MUST be invoked first before 'link'
  *
- * @param {string} baseDomain        - Your server domain
+ * @param {string} domain            - Your server domain
  * @param {object} options           - SSL cert options, sample:
  * {
  *    //SSL cert organization name. Optional, default is null.
- *    "certOrgName" : "Moxo, Inc." 
- *    
+ *    "certOrgName" : "Moxo, Inc."
+ *
  *    //SSL cert public key.
- *    "certPublicKey" : "-----BEGIN PUBLIC KEY-----\nYOUR PUBLIC KEY\n-----END PUBLIC KEY-----\n" 
- *    
+ *    "certPublicKey" : "-----BEGIN PUBLIC KEY-----\nYOUR PUBLIC KEY\n-----END PUBLIC KEY-----\n"
+ *
  *    //Ignore bad SSL cert or not. Default is true.
  *    ignoreBadCert : false
  * }
  */
-export function setup(domain: string, options?:object) {
-  return MoxoModule.setup(domain,options);
+export function setup(domain: string, options?: object) {
+  // Older Android builds accepted the options as a JSON string.
+  const linkOptions =
+    typeof options === 'string' ? JSON.parse(options) : options;
+  return MoxoModule.setup(domain, linkOptions);
 }
 
 /**
  * Link user with access token.
  * @param {string} token             - User access token
-*/
+ */
 export function link(token: string): Promise<boolean> {
   return MoxoModule.link(token);
 }
@@ -50,28 +52,28 @@ export function link(token: string): Promise<boolean> {
 /**
  *  Unlink user.
  * @param {boolean} keepNotification             - Keep notification after user unlink
-*/
+ */
 export function unlink(keepNotification: boolean = false) {
   return MoxoModule.unlink(keepNotification);
 }
 
 /**
  * Show mep main window.
-*/
+ */
 export function showMEPWindow() {
   return MoxoModule.showMEPWindow();
 }
 
 /**
  * Hide mep main window.
-*/
+ */
 export function hideMEPWindow() {
   return MoxoModule.hideMEPWindow();
 }
 
 /**
  * Change language, language code should follow ISO 639-1 standard.
-*/
+ */
 export function changeLanguage(language: string) {
   return MoxoModule.changeLanguage(language);
 }
@@ -80,20 +82,23 @@ export function changeLanguage(language: string) {
  * Open chat with chat Id and scroll to the specified feed
  * @param {string} chatId             - Id of chat.
  * @param {number} feedSequence       - Sequence of feed.
-*/
-export function openChat(chatId: string, feedSequence:number): Promise<boolean> {
-  return MoxoModule.openChat(chatId,feedSequence);
+ */
+export function openChat(
+  chatId: string,
+  feedSequence: number
+): Promise<boolean> {
+  return MoxoModule.openChat(chatId, feedSequence);
 }
 
 /**
  * Open relation chat with user
- * @param {object} options             - User object, includes either uniqueId or email of target relation user, sample: 
+ * @param {object} options             - User object, includes either uniqueId or email of target relation user, sample:
  * {
- *    "uniqueId" : "user_unique_id_1" 
- *    //or 
+ *    "uniqueId" : "user_unique_id_1"
+ *    //or
  *    "email" : "user_email "
  * }
-*/
+ */
 export function openRelation(options: object): Promise<boolean> {
   return MoxoModule.openRelation(options);
 }
@@ -101,8 +106,8 @@ export function openRelation(options: object): Promise<boolean> {
 /**
  *  Get unread message count of current user.
  * @param {object} options             - Reserved option.
-*/
-export function getUnreadMessageCount(options?:object): Promise<number> {
+ */
+export function getUnreadMessageCount(options?: object): Promise<number> {
   return MoxoModule.getUnreadMessageCount(options);
 }
 
@@ -110,17 +115,19 @@ export function getUnreadMessageCount(options?:object): Promise<number> {
  * Set the callback when unread messages count updated
  *
  * @param {function} callback   - Would be invoked when user unread messages count updated, with an integer parameter which represents unread messages count post update
-*/
-export function onUnreadMessageCountUpdated(callback:(count:number) => void) {
-  MoxoEventEmitter.addListener(UNREAD_MSG_EVENT,callback);
+ */
+export function onUnreadMessageCountUpdated(
+  callback: (count: number) => void
+): EventSubscription {
+  return MoxoModule.onUnreadMessageCountUpdated(callback);
 }
 
 /**
- * Register Moxo notification with device token 
+ * Register Moxo notification with device token
  *
  * @param {string} deviceToken   - Device token
-*/
-export function registerNotification(deviceToken:string) {
+ */
+export function registerNotification(deviceToken: string) {
   return MoxoModule.registerNotification(deviceToken);
 }
 
@@ -137,22 +144,24 @@ export function registerNotification(deviceToken:string) {
  *  }
  *
  * @param {object} payload   - Notification payload
-*/
-export function parseNotification(payload:object): Promise<object>  {
+ */
+export function parseNotification(payload: object): Promise<object> {
   return MoxoModule.parseNotification(payload);
 }
 
 /**
  * Show meet ringer with session Id. For Android only.
- * @param {string} sessionId   - session Id 
-*/
-export function showMeetRinger(sessionId:string): Promise<object>  {
-  return MoxoModule.showMeetRinger(sessionId);
+ * @param {string} sessionId   - session Id
+ */
+export function showMeetRinger(sessionId: string): Promise<object> {
+  return MoxoModule.showMeetRinger(
+    sessionId
+  ) as Promise<unknown> as Promise<object>;
 }
 
 /**
  * Start meet with options.
- * 
+ *
  * @param topic   Topic of meeting
  * @param options Start meet options.
  *  {
@@ -176,8 +185,9 @@ export function startMeet(topic: string, options?: object): Promise<object> {
 /**
  * Set the callback when user tap close button on MEP window
  * You should call hideMEPWindow() to hide MEP window in this callback if you want to hide MEP window
-*/
-export function onTapWindowClose(callback: () => void) {
-  MoxoEventEmitter.addListener(TAP_WINDOW_CLOSE_EVENT, callback);
+ */
+export function onTapWindowClose(callback: () => void): EventSubscription {
+  const subscription = MoxoModule.onTapWindowClose(callback);
+  MoxoModule.enableTapWindowCloseEvent();
+  return subscription;
 }
-

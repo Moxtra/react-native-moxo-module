@@ -10,8 +10,9 @@ Moxo is an AI workflow automation platform for business operations.
 
 ### Supported Platforms
 
-* iOS 15.0+
+* iOS 15.6+
 * Android 7+
+* React Native 0.80+ with the New Architecture
 
 ## Preparation
 
@@ -24,11 +25,33 @@ Below sdk or tools are required before start to use react-native-moxo-module.
 
 * Android Studio
 * Android SDK API 24+ (Android 7.0)
+* compileSdk 37+
+* Android Gradle Plugin 9.1+
+* Kotlin 2.3+. The React Native template defaults to Kotlin 2.2, so pin the Kotlin Gradle plugin in `android/build.gradle`:
+
+```groovy
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20")
+    }
+}
+```
+
+* Jetifier, because some of the SDK's dependencies still use the Android Support Library. Add this to `android/gradle.properties`:
+
+```properties
+android.enableJetifier=true
+```
 
 ### iOS
 
 * Xcode v26+
 * Cocoapod v1.16.2+
+* Deployment target 15.6+. The React Native template defaults to 15.1, so raise it in `ios/Podfile` and set the app target's iOS Deployment Target to 15.6 in Xcode:
+
+```ruby
+platform :ios, '15.6'
+```
 
 For more react-native set up details, please ref to [react native official site](https://reactnative.dev/docs/environment-setup)
 
@@ -94,6 +117,19 @@ If user is logged in, call open chat API to open existing chat. If not logged in
 
 ```js
 moxo.openChat('CBSmiUUjyIJP7gR8YIpiagvH', '')
+```
+
+### Events
+
+Event callbacks return a subscription. Call `remove()` on it when you no longer need the callback.
+
+```js
+const subscription = moxo.onUnreadMessageCountUpdated((count) => {
+  console.log(`Unread messages: ${count}`);
+});
+
+// Later
+subscription.remove();
 ```
 
 ### Notification

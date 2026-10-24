@@ -1,169 +1,63 @@
-buildscript {
-  // Buildscript is evaluated before everything else so we can't use getExtOrDefault
-  def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['MoxoModule_kotlinVersion']
-
-  repositories {
-    google()
-    mavenCentral()
-    maven() {
-      url "https://mxrepo.moxo.com/repository/customer-maven-releases/"
-    }
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.3'
-    // noinspection DifferentKotlinGradleVersion
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-  }
-}
-
-rootProject.allprojects {
-  repositories {
-    google()
-    mavenCentral()
-    jcenter()
-    maven() {
-      url "https://mxrepo.moxo.com/repository/customer-maven-releases/"
-    }
-  }
-}
-
-def isNewArchitectureEnabled() {
-  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
-}
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-
-if (isNewArchitectureEnabled()) {
-  apply plugin: 'com.facebook.react'
-}
-
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['MoxoModule_' + name]
 }
 
 def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['MoxoModule_' + name]).toInteger()
+  return getExtOrDefault(name).toInteger()
+}
+
+// AGP 9 compiles Kotlin itself unless the app opts out with android.builtInKotlin=false.
+def builtInKotlin = (project.findProperty('android.builtInKotlin') ?: 'true').toString().toBoolean()
+
+apply plugin: 'com.android.library'
+if (!builtInKotlin) {
+  apply plugin: 'org.jetbrains.kotlin.android'
+}
+apply plugin: 'com.facebook.react'
+
+// The app has to resolve mep-sdk and its dependencies from the Moxo repository.
+rootProject.allprojects {
+  repositories {
+    maven {
+      url = 'https://mxrepo.moxo.com/repository/customer-maven-releases/'
+    }
+  }
 }
 
 android {
-  compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
-  namespace "com.moxomodule"
+  namespace = 'com.moxomodule'
+  compileSdk = getExtOrIntegerDefault('compileSdkVersion')
 
   defaultConfig {
-    minSdkVersion getExtOrIntegerDefault('minSdkVersion')
-    targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+    minSdk = getExtOrIntegerDefault('minSdkVersion')
+    targetSdk = getExtOrIntegerDefault('targetSdkVersion')
   }
+
   buildTypes {
     release {
-      minifyEnabled false
+      minifyEnabled = false
     }
   }
 
-  lintOptions {
+  lint {
     disable 'GradleCompatible'
   }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
-
-  kotlinOptions {
-        jvmTarget = "17"
-  }
-
-  buildFeatures {
-        buildConfig true
-    }
-}
-
-repositories {
-  mavenCentral()
-  google()
-
-  def found = false
-  def defaultDir = null
-  def androidSourcesName = 'React Native sources'
-
-  if (rootProject.ext.has('reactNativeAndroidRoot')) {
-    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
-  } else {
-    defaultDir = new File(
-      projectDir,
-      '/../../../node_modules/react-native/android'
-    )
-  }
-
-  if (defaultDir.exists()) {
-    maven {
-      url defaultDir.toString()
-      name androidSourcesName
-    }
-
-    logger.info(":${project.name}:reactNativeAndroidRoot ${defaultDir.canonicalPath}")
-    found = true
-  } else {
-    def parentDir = rootProject.projectDir
-
-    1.upto(5, {
-      if (found) return true
-      parentDir = parentDir.parentFile
-
-      def androidSourcesDir = new File(
-        parentDir,
-        'node_modules/react-native'
-      )
-
-      def androidPrebuiltBinaryDir = new File(
-        parentDir,
-        'node_modules/react-native/android'
-      )
-
-      if (androidPrebuiltBinaryDir.exists()) {
-        maven {
-          url androidPrebuiltBinaryDir.toString()
-          name androidSourcesName
-        }
-
-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidPrebuiltBinaryDir.canonicalPath}")
-        found = true
-      } else if (androidSourcesDir.exists()) {
-        maven {
-          url androidSourcesDir.toString()
-          name androidSourcesName
-        }
-
-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidSourcesDir.canonicalPath}")
-        found = true
-      }
-    })
-  }
-
-  if (!found) {
-    throw new GradleException(
-      "${project.name}: unable to locate React Native android sources. " +
-        "Ensure you have you installed React Native as a dependency in your project and try again."
-    )
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
 }
 
-def kotlin_version = getExtOrDefault('kotlinVersion')
+if (!builtInKotlin) {
+  kotlin {
+    compilerOptions {
+      jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+  }
+}
 
 dependencies {
-  //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation "com.moxtra:mep-sdk:10.11.1"
-// From node_modules
-}
-
-if (isNewArchitectureEnabled()) {
-  react {
-    jsRootDir = file("../src/")
-    libraryName = "MoxoModule"
-    codegenJavaPackageName = "com.moxomodule"
-  }
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.moxtra:mep-sdk:10.13.1'
 }
