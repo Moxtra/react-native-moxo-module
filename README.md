@@ -1,247 +1,138 @@
 Moxo is an AI workflow automation platform for business operations.
 
-![moxo](https://assets-global.website-files.com/612ecbcc615e87b0b9b38524/62037243f5ede375a8705a34_Moxo-Website-Button.svg)
+# 🚀 Moxo React Native Module (`react-native-moxo-module`)
 
-[ [Introduce](#introduce) &bull; [Preparation](#preparation) &bull; [Installation](#installation) &bull; [Initialization](#initialization) &bull; [Sample Code](#sample-code) &bull; [API Doc](#api-doc)]
+[![React Native](https://img.shields.io/badge/React%20Native-0.74%2B%20%7C%20TurboModule-61DAFB.svg?style=flat-square&logo=react)](https://reactnative.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
+[![Android](https://img.shields.io/badge/Android-SDK%2010.13.1-3DDC84.svg?style=flat-square&logo=android)](https://developer.android.com)
+[![iOS](https://img.shields.io/badge/iOS-MEPSDK%2010.13.1-000000.svg?style=flat-square&logo=apple)](https://developer.apple.com/ios)
+[![NPM](https://img.shields.io/badge/npm-react--native--moxo--module-CB3837.svg?style=flat-square&logo=npm)](https://www.npmjs.com/package/react-native-moxo-module)
 
-## Introduce
+Welcome to the **Moxo React Native Module Repository (`react-native-moxo-module`)**! This package provides the modern TurboModule wrapper for the Moxo Mobile SDK, enabling React Native mobile applications to launch high-touch client collaboration portals, real-time messaging, document collaboration, and WebRTC video meetings.
 
-**react-native-moxo-module** is a [moxo sdk](https://www.moxo.com/platform/sdks) react-native wrapper. Provide Moxo capabilities to your mobile app built on [React Native](https://reactnative.dev/)
+---
 
-### Supported Platforms
+## 📖 1. What is this Project?
 
-* iOS 15.6+
-* Android 7+
-* React Native 0.80+ with the New Architecture
+### The Core Concept
+The **React Native Moxo Module** bridges Moxo's native mobile frameworks (`MEPSDK.xcframework` on iOS and `moxosdk.aar` on Android) into React Native applications using React Native's modern New Architecture (**TurboModules**).
 
-## Preparation
+It provides typed TypeScript APIs, promise-based asynchronous execution, and zero-overhead native bridging to launch conversation binders, conduct meetings, and manage user identity.
 
-Below sdk or tools are required before start to use react-native-moxo-module.
+### Key Capabilities
+* **Modern TurboModule Architecture:** Fully migrated to React Native TurboModule codegen for synchronous C++ call performance and typed specifications.
+* **Full Collaboration Suite:** Launch client portals, view timeline binders, open interactive PDF documents, and conduct video calls.
+* **Push Notification Gateway:** Seamlessly relays APNs and FCM device tokens to Moxo servers for background notifications.
 
-* Node.js v22 LTS and Later
-* Watchman
+### Role in the Moxo Ecosystem
+* **Core SDK Source:** Links against  and .
+* **Sample Reference:** Demonstrated in  (`v10reactnativeSDKApp`).
 
-### Android
+---
 
-* Android Studio
-* Android SDK API 24+ (Android 7.0)
-* compileSdk 37+
-* Android Gradle Plugin 9.1+
-* Kotlin 2.3+. The React Native template defaults to Kotlin 2.2, so pin the Kotlin Gradle plugin in `android/build.gradle`:
+## 📂 2. Repository Anatomy
 
-```groovy
-buildscript {
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20")
-    }
-}
+```
+react-native-moxo/
+├── src/                        # TypeScript source & TurboModule codegen specs
+│   ├── index.ts                # Primary exported JavaScript/TypeScript API
+│   └── NativeMoxoModule.ts     # TurboModule Spec interface
+├── android/                    # Android Kotlin/Java TurboModule implementation
+├── ios/                        # iOS Objective-C / Swift TurboModule implementation
+├── package.json                # NPM package manifest (version 10.13.1)
+└── react-native-moxo-module.podspec # CocoaPods specification for iOS
 ```
 
-* Jetifier, because some of the SDK's dependencies still use the Android Support Library. Add this to `android/gradle.properties`:
+| Module / Directory Path | Role in the Ecosystem | Description |
+| :--- | :--- | :--- |
+| 📁 [src](./src) | **TypeScript Source** | Strongly-typed API interfaces and TurboModule NativeModule declarations. |
+| 📁 [android](./android) | **Android TurboModule** | Native Android implementation linking Moxo Android SDK AAR. |
+| 📁 [ios](./ios) | **iOS TurboModule** | Native iOS implementation linking `MEPSDK.xcframework`. |
+| 📄 [package.json](./package.json) | **NPM Manifest** | Codegen configuration, dependencies, and script runners. |
 
-```properties
-android.enableJetifier=true
+---
+
+## ⚙️ 3. Prerequisites & Environment Setup
+
+* **React Native:** React Native **0.72+** (supports both Old and New Architecture).
+* **Node.js:** **v22.14.0 (LTS)** (minimum **v22.13.0 LTS** required by `package.json` engines; manage with `nvm install 22.14.0 && nvm use 22.14.0`).
+* **iOS Environment:** Xcode 15+ and CocoaPods 1.13+.
+* **Android Environment:** Android Studio with Android NDK 26+ and Java 17.
+
+---
+
+## 🛠️ 4. Quick Start: Installation & Usage
+
+### 1️⃣ Installation
+```bash
+# Using Yarn
+yarn add react-native-moxo-module
+
+# Using NPM
+npm install react-native-moxo-module
 ```
 
-### iOS
-
-* Xcode v26+
-* Cocoapod v1.16.2+
-* Deployment target 15.6+. The React Native template defaults to 15.1, so raise it in `ios/Podfile` and set the app target's iOS Deployment Target to 15.6 in Xcode:
-
-```ruby
-platform :ios, '15.6'
+### 2️⃣ iOS CocoaPods Setup
+```bash
+cd ios && pod install && cd ..
 ```
 
-For more react-native set up details, please ref to [react native official site](https://reactnative.dev/docs/environment-setup)
+### 3️⃣ Initialize Moxo SDK in React Native
+```typescript
+import Moxo from 'react-native-moxo-module';
 
-## Installation
-
-```sh
-npm install @moxtradeveloper/react-native-moxo-module
-```
-
-## Initialization
-
-### Login
-
-Before login, we need to get access token, by Moxo RestAPI:
-
-```js
-// Get access token
-const response = await fetch('https://myenv.moxo.com/v1/core/oauth/token', {
-    method: 'POST',
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        client_id: 'my_clientid',
-        org_id: 'my_orgid',
-        unique_id: 'my_uniqueid',
-        client_secret: 'my_clientsecret'
-    })
-})
-const json = await response.json();
-token = json.access_token
-```
-
-Import plugin before use, then initialize moxo sdk and login with access token:
-
-```js
-import * as moxo from 'react-native-moxo-module';
-// Setup domain
-moxo.setup('myenv.moxo.com')
-//Login and show moxo engagement platform window
-moxo.link(token).then((result)=>{
-if (result)
-    console.log(`Link success`)
-}).catch((err=>{
-    console.log(`Link failed!:${err}`);
-}))
-```
-
-### Show MEP window
-
-After login successful, we can show MEP window directly.
-
-```js
-moxo.showMEPWindow();
-```
-
-## Sample Code
-
-### Open existing chat
-
-If user is logged in, call open chat API to open existing chat. If not logged in or chat does not exists, API will return error with error code and error message.
-
-```js
-moxo.openChat('CBSmiUUjyIJP7gR8YIpiagvH', '')
-```
-
-### Events
-
-Event callbacks return a subscription. Call `remove()` on it when you no longer need the callback.
-
-```js
-const subscription = moxo.onUnreadMessageCountUpdated((count) => {
-  console.log(`Unread messages: ${count}`);
+// Initialize the SDK with your tenant domain
+await Moxo.init({
+    domain: "your-subdomain.moxo.com"
 });
-
-// Later
-subscription.remove();
 ```
 
-### Notification
-
-To enable notification feature, you'll need to integrate a notification module first, here we take [react-native-notifications](https://www.npmjs.com/package/react-native-notifications) for example, which can help to get device token and notification payload.
-
-#### Register notification
-
-Through react-native-notifications registerRemoteNotifications(), post user agreement, notification will be enabled for your app.
-Call registerRemoteNotificationsRegistered() to get a device token.
-Then pass token to moxo function ``registerNotification()`` will register notification to Moxo server.
-
-```js
-    Notifications.registerRemoteNotifications();
-    Notifications.events().registerRemoteNotificationsRegistered((event: Registered) => {
-      console.log("Device Token Received", event.deviceToken);
-      moxo.registerNotification(event.deviceToken).catch((err=>{
-        alertErr("Register notification failed", err);
-      }));
+### 4️⃣ Launch the Collaboration Portal
+```typescript
+// Open Moxo with authenticated access token
+try {
+    await Moxo.showMEP({
+        accessToken: "USER_ACCESS_TOKEN"
     });
-    Notifications.events().registerRemoteNotificationsRegistrationFailed((event: RegistrationError) => {
-        console.error(event);
-    });
-```
-
-#### Handle notification
-
-For example, once notification received, and user tapped notification, react-native-notifications function registerNotificationOpened will be triggered with notification payload data. Then pass payload to moxo function ``parseNotification()`` like below:
-
-```js
-    Notifications.events().registerNotificationOpened((notification: Notification, completion: () => void, action?: NotificationActionResponse) => {
-      console.log("Notification opened by device user", notification.payload);
-      if (action != undefined) {
-        console.log(`Notification opened with an action identifier: ${action.identifier} and response text: ${action.text}`);
-      }
-      moxo.parseNotification(notification.payload).then((result=>{
-        console.log(`Moxo notificaiton parse success: ${result}`);
-        completion();
-      })).catch(err => {
-        alertErr('Notification parse failed',err)
-      })
-    });
-```
-
-If is a Moxo notification, then callback of the ``parseNotification()`` would be triggered with info parameter. Usually info contains 'chat_id' or 'meet_id', depends one which kind of notification you received.
-To do more, you can invoke function openChat(chat_id) to open target chat directly.
-
-#### Sample notification payload
-
-##### iOS
-
-```json
-{
-    "aps": {
-        "alert": {
-            "body": "cheng4: hi",
-            "action_loc_key": "BCA"
-        },
-        "sound": "default"
-    },
-    "request": {
-        "object": {
-            "board": {
-                "id": "CBPErkesrtOeFfURA6gusJAD",
-                "feeds": [{
-                    "sequence": 191
-                }]
-            }
-        }
-    },
-    "id": "359",
-    "category": "message",
-    "board_id": "CBPErkesrtOeFfURA6gusJAD"
+} catch (error) {
+    console.error("Failed to launch Moxo:", error);
 }
 ```
 
-##### Android
+---
 
-```json
-[
-  {
-    "count": "7",
-    "sound": "default",
-    "title": "rm1 Zhang",
-    "message": "rm1 Zhang: 1",
-    "additionalData": {
-       "feed_sequence": "3234",
-       "action_loc_key": "BCA",
-       "board_feed_unread_count": "3",
-       "user_id": "CUxceIGfpXcHBna163lfFMD0",
-       "arg1": "rm1 Zhang",
-       "arg2": "1",
-       "arg3": "",
-       "loc_key": "BCM",
-       "request": {
-         "object": {
-        "board": {
-           "id": "CBPErkesrtOeFfURA6gusJAD",
-           "feeds": [{
-              "sequence": 3234
-                    }]
-                 }
-               }
-        },
-       "board_id": "CBPErkesrtOeFfURA6gusJAD",
-       "coldstart": false,
-       "board_name": "rm1 Zhang",
-       "foreground": true
-    }
-}]
+## 📦 5. Building & Publishing
+
+To compile TypeScript and codegen artifacts:
+```bash
+yarn prepare
+npm pack
 ```
 
-## API Doc
+---
 
-[API doc](https://htmlpreview.github.io/?https://github.com/Moxtra/react-native-moxo-module/blob/main/docs/index.html)
+## ⚡ 6. Technical Architecture & TurboModule Bridge
+
+```
+┌────────────────────────────────────────────────────────┐
+│               React Native Application (TSX)           │
+└──────────────────────────┬─────────────────────────────┘
+                           │ JSI (JavaScript Interface)
+┌──────────────────────────▼─────────────────────────────┐
+│                 NativeMoxoModule Spec                  │
+│       Codegen-generated C++ JSI / TurboModule Stubs    │
+└────────────┬─────────────────────────────┬─────────────┘
+             │ JNI                         │ ObjC / Swift Runtime
+┌────────────▼─────────────┐ ┌─────────────▼─────────────┐
+│   Android Native Bridge  │ │     iOS Native Bridge     │
+│   (moxosdk.aar)          │ │   (MEPSDK.xcframework)    │
+└──────────────────────────┘ └───────────────────────────┘
+```
+
+---
+
+## 🌿 7. Versioning & Git Strategy
+
+* **Main Branch:** `main` — Canonical branch for React Native module development.
+* **Platform Alignment:** Release 10.13.1 aligns with Moxo SDK 10.13.1.
+* **GitHub URL:** `https://github.com/Moxtra/react-native-moxo-module.git`
